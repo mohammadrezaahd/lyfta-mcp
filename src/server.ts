@@ -1,25 +1,21 @@
-import { readFileSync } from "node:fs";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { LyftaClient, LyftaApiError } from "./lyfta-client.js";
-import { getKey } from "./key-context.js";
 
 const RATE = "Rate limits: 60 req/min, 5000 req/day. All IDs are strings.";
 
 // Single source of truth for the version: package.json sits next to dist/ at
 // runtime (and one level up from src/ in dev), so this resolves in every mode.
-const { version } = JSON.parse(
-  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
-) as { version: string };
+const version = "0.3.1";
 
 type ToolResult = {
   content: { type: "text"; text: string }[];
   isError?: boolean;
 };
 
-async function runTool(fn: (c: LyftaClient) => Promise<unknown>): Promise<ToolResult> {
+async function runTool(apiKey: string, fn: (c: LyftaClient) => Promise<unknown>): Promise<ToolResult> {
   try {
-    const data = await fn(new LyftaClient(getKey()));
+    const data = await fn(new LyftaClient(apiKey));
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
   } catch (e) {
     const msg =
@@ -72,7 +68,7 @@ const workoutSchema = z
   .passthrough();
 
 /** Build a fully-configured MCP server with all Lyfta tools registered. */
-export function createServer(): McpServer {
+export function createServer(apiKey: string): McpServer {
   const server = new McpServer({ name: "lyfta-mcp", version });
 
   server.registerTool(
@@ -85,7 +81,7 @@ export function createServer(): McpServer {
         limit: z.number().int().min(1).max(100).optional(),
       },
     },
-    async ({ page, limit }) => runTool((c) => c.listWorkouts({ page, limit })),
+    async ({ page, limit }) => runTool(apiKey, (c) => c.listWorkouts({ page, limit })),
   );
 
   server.registerTool(
@@ -98,7 +94,7 @@ export function createServer(): McpServer {
         limit: z.number().int().min(1).max(1000).optional(),
       },
     },
-    async ({ page, limit }) => runTool((c) => c.listWorkoutSummaries({ page, limit })),
+    async ({ page, limit }) => runTool(apiKey, (c) => c.listWorkoutSummaries({ page, limit })),
   );
 
   server.registerTool(
@@ -108,7 +104,7 @@ export function createServer(): McpServer {
       description: `Catalog of exercises the user has performed. Note: equipment/body-part/muscle IDs are returned as JSON-stringified arrays. ${RATE}`,
       inputSchema: {},
     },
-    async () => runTool((c) => c.listExercises()),
+    async () => runTool(apiKey, (c) => c.listExercises()),
   );
 
   server.registerTool(
@@ -122,7 +118,7 @@ export function createServer(): McpServer {
       },
     },
     async ({ exercise_id, duration }) =>
-      runTool((c) => c.getExerciseProgress({ exercise_id, duration })),
+      runTool(apiKey, (c) => c.getExerciseProgress({ exercise_id, duration })),
   );
 
   server.registerTool(
@@ -132,7 +128,7 @@ export function createServer(): McpServer {
       description: `Coach API: active coaching clients. Errors if the account is not a coach. ${RATE}`,
       inputSchema: {},
     },
-    async () => runTool((c) => c.listClients()),
+    async () => runTool(apiKey, (c) => c.listClients()),
   );
 
   server.registerTool(
