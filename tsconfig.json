@@ -9,7 +9,12 @@
     "outDir": "dist",
     "rootDir": "src",
     "declaration": false,
-    "types": ["node"]
+    "types": [
+      "node",
+      "@cloudflare/workers-types"
+    ]
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }
