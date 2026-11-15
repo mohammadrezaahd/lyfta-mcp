@@ -113,11 +113,17 @@ async function authorize(request: Request, env: Env): Promise<Response> {
       const details = await oauth.describeConsent(authRequest);
       const consent = await oauth.beginConsent(authRequest);
       consent.headers.set("content-type", "text/html; charset=utf-8");
+      // ChatGPT initially asks only for the baseline read scope. Offer write as an
+      // explicit opt-in on the same consent screen so the user can create programs.
+      const consentScopes = [...new Set([
+        ...authRequest.scope.filter((scope) => SCOPES.includes(scope)),
+        "mcp:write",
+      ])];
       const response = renderAuthorizeForm(
         details.clientName,
         details.redirectHost,
         consent.handle,
-        authRequest.scope.filter((scope) => SCOPES.includes(scope)),
+        consentScopes,
       );
       const headers = new Headers(response.headers);
       for (const [key, value] of consent.headers) headers.set(key, value);
