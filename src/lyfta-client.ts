@@ -112,8 +112,28 @@ export class LyftaClient {
     return this.request("GET", "/api/v1/exercises");
   }
 
+  listExerciseLibrary(q: { search?: string; limit?: number; offset?: number } = {}) {
+    return this.request("GET", "/api/v1/exercises/library", { query: q });
+  }
+
   getExerciseProgress(q: { exercise_id: string; duration: number }) {
     return this.request("GET", "/api/v1/exercises/progress", { query: q });
+  }
+
+  listCollections(q: { page?: number; limit?: number } = {}) {
+    return this.request("GET", "/api/v1/collections", { query: q });
+  }
+
+  getCollection(id: string, view: "summary" | "full" = "full") {
+    return this.request("GET", `/api/v1/collections/${encodeURIComponent(id)}`, { query: { view } });
+  }
+
+  listTemplates(q: { page?: number; limit?: number } = {}) {
+    return this.request("GET", "/api/v1/templates", { query: q });
+  }
+
+  getTemplate(id: string) {
+    return this.request("GET", `/api/v1/templates/${encodeURIComponent(id)}`);
   }
 
   listClients() {
