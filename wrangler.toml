@@ -1,6 +1,11 @@
 name = "lyfta-mcp"
 main = "src/worker.ts"
 compatibility_date = "2026-11-15"
+compatibility_flags = ["global_fetch_strictly_public"]
+
+[[kv_namespaces]]
+binding = "OAUTH_KV"
+id = "7ac4c600dac34deb9b9510d49ce212f1"
 
 [observability]
 enabled = true
