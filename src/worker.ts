@@ -117,7 +117,7 @@ async function authorize(request: Request, env: Env): Promise<Response> {
         details.clientName,
         details.redirectHost,
         consent.handle,
-        authRequest.scope.filter((scope) => SCOPES.includes(scope)),
+        SCOPES.filter((scope) => scope !== "offline_access"),
       );
       const headers = new Headers(response.headers);
       for (const [key, value] of consent.headers) headers.set(key, value);
@@ -140,6 +140,9 @@ async function authorize(request: Request, env: Env): Promise<Response> {
     const scopes = form.getAll("scope").map(String).filter((scope) => SCOPES.includes(scope));
     if (!apiKey) {
       return html(page("<h1>Lyfta API Key required</h1><p>Go back and enter your API key.</p>"), 400);
+    }
+    if (!scopes.includes("mcp:read")) {
+      return html(page("<h1>Read access is required</h1><p>Please keep mcp:read selected and submit again.</p>"), 400);
     }
 
     try {
