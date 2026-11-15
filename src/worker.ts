@@ -166,7 +166,8 @@ async function authorize(request: Request, env: Env): Promise<Response> {
 }
 
 const apiHandler = {
-  async fetch(request: Request, _env: Env, ctx: OAuthContext): Promise<Response> {
+  async fetch(request: Request, _env: Env, rawContext: unknown): Promise<Response> {
+    const ctx = rawContext as OAuthContext;
     if (request.method === "POST") {
       try {
         const body = await request.clone().json() as {
