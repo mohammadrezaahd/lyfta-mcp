@@ -55,6 +55,7 @@ export default {
     const server = createServer(apiKey);
     const transport = new WebStandardStreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
+      enableJsonResponse: true,
     });
 
     try {
