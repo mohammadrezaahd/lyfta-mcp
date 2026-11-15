@@ -16,18 +16,23 @@ async function connect() {
 describe("server tools", () => {
   beforeEach(() => setDefaultKey("test-key"));
 
-  it("exposes all 7 tools", async () => {
+  it("exposes all 12 tools", async () => {
     const client = await connect();
     const { tools } = await client.listTools();
     const names = tools.map((t) => t.name).sort();
     expect(names).toEqual([
       "create_collection",
       "create_template",
+      "get_collection",
       "get_exercise_progress",
+      "get_template",
       "list_clients",
+      "list_collections",
       "list_exercises",
+      "list_templates",
       "list_workout_summaries",
       "list_workouts",
+      "search_exercise_library",
     ]);
   });
 
