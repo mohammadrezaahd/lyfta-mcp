@@ -145,7 +145,7 @@ export function createServer(apiKey: string): McpServer {
       },
     },
     async ({ title, description, goal, image, client_id }) =>
-      runTool((c) =>
+      runTool(apiKey, (c) =>
         c.createCollection({
           collection: { title, description, goal, image },
           ...(client_id ? { client_id } : {}),
@@ -165,7 +165,7 @@ export function createServer(apiKey: string): McpServer {
       },
     },
     async ({ collectionId, workout, clientId }) =>
-      runTool((c) =>
+      runTool(apiKey, (c) =>
         c.createTemplate({ collectionId, workout, ...(clientId ? { clientId } : {}) }),
       ),
   );
