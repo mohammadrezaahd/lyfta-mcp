@@ -108,6 +108,71 @@ export function createServer(apiKey: string): McpServer {
   );
 
   server.registerTool(
+    "search_exercise_library",
+    {
+      title: "Search exercise library",
+      description: `Search Lyfta's exercise library by name. Returns catalog IDs and metadata needed to create templates. This is a read-only tool. ${RATE}`,
+      inputSchema: {
+        search: z.string().optional().describe("Exercise name or search phrase"),
+        limit: z.number().int().min(1).max(100).optional(),
+        offset: z.number().int().min(0).optional(),
+      },
+    },
+    async ({ search, limit, offset }) =>
+      runTool(apiKey, (c) => c.listExerciseLibrary({ search, limit, offset })),
+  );
+
+  server.registerTool(
+    "list_collections",
+    {
+      title: "List collections",
+      description: `List saved programs and collections. ${RATE}`,
+      inputSchema: {
+        page: z.number().int().min(1).optional(),
+        limit: z.number().int().min(1).max(100).optional(),
+      },
+    },
+    async ({ page, limit }) => runTool(apiKey, (c) => c.listCollections({ page, limit })),
+  );
+
+  server.registerTool(
+    "get_collection",
+    {
+      title: "Get collection",
+      description: `Get one collection. Use view=full to include every workout template and its exercise data. ${RATE}`,
+      inputSchema: {
+        collection_id: z.string(),
+        view: z.enum(["summary", "full"]).optional(),
+      },
+    },
+    async ({ collection_id, view }) =>
+      runTool(apiKey, (c) => c.getCollection(collection_id, view ?? "full")),
+  );
+
+  server.registerTool(
+    "list_templates",
+    {
+      title: "List workout templates",
+      description: `List saved workout template cards. ${RATE}`,
+      inputSchema: {
+        page: z.number().int().min(1).optional(),
+        limit: z.number().int().min(1).max(100).optional(),
+      },
+    },
+    async ({ page, limit }) => runTool(apiKey, (c) => c.listTemplates({ page, limit })),
+  );
+
+  server.registerTool(
+    "get_template",
+    {
+      title: "Get workout template",
+      description: `Get one saved workout template, including exercises and sets. Useful for verifying custom exercise IDs and names. ${RATE}`,
+      inputSchema: { template_id: z.string() },
+    },
+    async ({ template_id }) => runTool(apiKey, (c) => c.getTemplate(template_id)),
+  );
+
+  server.registerTool(
     "get_exercise_progress",
     {
       title: "Get exercise progress",
