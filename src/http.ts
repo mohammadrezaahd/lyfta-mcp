@@ -3,7 +3,6 @@ import { fileURLToPath } from "node:url";
 import express, { type Request, type Response } from "express";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { createServer } from "./server.js";
-import { keyContext } from "./key-context.js";
 
 function bearer(req: Request): string | undefined {
   // RFC 6750: the auth scheme is case-insensitive; tolerate extra whitespace.
@@ -31,8 +30,7 @@ export function createApp() {
       return;
     }
 
-    await keyContext.run(key, async () => {
-      const server = createServer();
+    const server = createServer(key);
       const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
       res.on("close", () => {
         transport.close();
@@ -50,7 +48,6 @@ export function createApp() {
           });
         }
       }
-    });
   });
 
   // Stateless server: no SSE stream or session teardown over GET/DELETE.
