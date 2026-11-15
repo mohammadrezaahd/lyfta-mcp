@@ -22,10 +22,20 @@ Runs over **two transports** from one codebase:
 | `list_workouts` | GET | Detailed workouts incl. exercises and sets (paginated, limit ≤ 100). |
 | `list_workout_summaries` | GET | Lightweight workout summaries (paginated, limit ≤ 1000). |
 | `list_exercises` | GET | Catalog of exercises you've performed. |
+| `search_exercise_library` | GET | Search the full Lyfta exercise library by name and retrieve catalog IDs. |
+| `list_collections` | GET | List saved programs and collections. |
+| `get_collection` | GET | Read a collection, including full template contents. |
+| `list_templates` | GET | List saved workout templates. |
+| `get_template` | GET | Read a template with full exercise and set data. |
 | `get_exercise_progress` | GET | Progress over time for one exercise (`exercise_id`, `duration` days). |
 | `list_clients` | GET | Coach API — your active coaching clients. |
 | `create_collection` | POST | Create a program/collection. |
 | `create_template` | POST | Create a workout template inside a collection. |
+
+**Custom exercise note:** the documented public API currently exposes exercise-library search
+and template creation, but does not document a custom-exercise creation endpoint. Use
+`search_exercise_library` and `get_template` to verify whether an exercise created in the app
+is available to templates through the API.
 
 All IDs are strings. Lyfta enforces rate limits of **60 req/min** and **5,000 req/day**; a `429`
 is surfaced to the client with the `Retry-After` value when present.
