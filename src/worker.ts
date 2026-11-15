@@ -42,7 +42,7 @@ export default {
       return cors(json({ error: "Method not allowed" }, 405));
     }
 
-    const match = /^Bearer\\s+(.+)$/i.exec(request.headers.get("authorization") ?? "");
+    const match = /^Bearer\s+(.+)$/i.exec(request.headers.get("authorization") ?? "");
     const apiKey = match?.[1]?.trim();
     if (!apiKey) {
       return cors(json({
