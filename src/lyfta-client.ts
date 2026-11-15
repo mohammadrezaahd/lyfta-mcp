@@ -32,9 +32,9 @@ export class LyftaClient {
     private apiKey: string,
     opts: LyftaClientOptions = {},
   ) {
-    this.baseUrl = opts.baseUrl ?? process.env.LYFTA_BASE_URL ?? "https://my.lyfta.app";
+    this.baseUrl = opts.baseUrl ?? (typeof process !== "undefined" ? process.env.LYFTA_BASE_URL : undefined) ?? "https://my.lyfta.app";
     this.fetchImpl = opts.fetchImpl ?? fetch;
-    this.timeoutMs = opts.timeoutMs ?? (Number(process.env.LYFTA_TIMEOUT_MS) || 30_000);
+    this.timeoutMs = opts.timeoutMs ?? (Number(typeof process !== "undefined" ? process.env.LYFTA_TIMEOUT_MS : undefined) || 30_000);
   }
 
   private async request(
