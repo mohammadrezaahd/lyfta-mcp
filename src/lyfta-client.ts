@@ -33,7 +33,9 @@ export class LyftaClient {
     opts: LyftaClientOptions = {},
   ) {
     this.baseUrl = opts.baseUrl ?? (typeof process !== "undefined" ? process.env.LYFTA_BASE_URL : undefined) ?? "https://my.lyfta.app";
-    this.fetchImpl = opts.fetchImpl ?? fetch;
+    // Cloudflare's fetch implementation requires the global object as `this`.
+    // Bind it before storing because request() invokes fetchImpl as a class field.
+    this.fetchImpl = opts.fetchImpl ?? globalThis.fetch.bind(globalThis);
     this.timeoutMs = opts.timeoutMs ?? (Number(typeof process !== "undefined" ? process.env.LYFTA_TIMEOUT_MS : undefined) || 30_000);
   }
 
